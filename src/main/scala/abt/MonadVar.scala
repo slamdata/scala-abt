@@ -17,5 +17,7 @@ trait MonadVar[F[_], A] extends Monad[F] {
 
 object MonadVar {
   def apply[F[_], A](implicit FA: MonadVar[F, A]): MonadVar[F, A] = FA
-}
 
+
+  implicit def eitherTMonadVar[F[_]]
+}
