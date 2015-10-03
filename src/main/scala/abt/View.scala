@@ -6,10 +6,10 @@ import scalaz._
 
 /**
  *
- * @tparam Variable Type of Variables in the ADT (kind of like identifier)
- * @tparam Operator The underlying AST
+ * @tparam V Type of Variables in the ADT (kind of like identifier)
+ * @tparam O The underlying AST
  */
-sealed trait View[Variable, Operator, A]
+sealed trait View[V, O, A]
 
 object View {
   /** A node that’s a variable reference */
