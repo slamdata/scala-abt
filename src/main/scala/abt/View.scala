@@ -1,11 +1,15 @@
 package abt
 
+import scala.collection.immutable.List
+
+import scalaz._
+
 /**
  *
- * @tparam Variable Type of Variables in the ADT (kind of like identifier)
- * @tparam Operator The underlying AST
+ * @tparam V Type of Variables in the ADT (kind of like identifier)
+ * @tparam O The underlying AST
  */
-sealed trait View[Variable, Operator, A]
+sealed trait View[V, O, A]
 
 object View {
   /** A node that’s a variable reference */
@@ -18,7 +22,7 @@ object View {
   implicit def viewFunctor[V, O]: Functor[View[V, O, ?]] =
     new Functor[View[V, O, ?]] {
       def map[A, B](va: View[V, O, A])(f: A => B) = va match {
-        case Var(_)      => va
+        case Var(v)      => Var(v)
         case Abs(vs, a)  => Abs(vs, f(a))
         case App(op, as) => App(op, as map f)
       }
