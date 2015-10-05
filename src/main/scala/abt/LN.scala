@@ -1,6 +1,6 @@
 package abt
 
-import scala.collection.immutable.List
+import scala.collection.immutable.Vector
 import scala.Unit
 import scala.Predef.???
 
@@ -13,9 +13,9 @@ sealed trait LN[S, V, O]
 object LN {
   final case class FreeVar[S, V, O](v: V, s: S) extends LN[S, V, O]
   final case class BoundVar[S, V, O](c: Coord, s: S) extends LN[S, V, O]
-  final case class Abstraction[S, V, O](vs: List[(V, S)], t: LN[S, V, O])
+  final case class Abstraction[S, V, O](vs: Vector[(V, S)], t: LN[S, V, O])
       extends LN[S, V, O]
-  final case class Application[S, V, O](o: O, args: List[LN[S, V, O]])
+  final case class Application[S, V, O](o: O, args: Vector[LN[S, V, O]])
       extends LN[S, V, O]
 
   /** NB: Not inherently stack safe, depends on the underlying Monad to
