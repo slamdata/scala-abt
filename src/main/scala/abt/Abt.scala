@@ -9,10 +9,10 @@ import scalaz._
   */
 trait Abt[S, V, O, T] {
   def check[M[_, _]](view: View[V, O, T], valence: Valence[S])
-                    (implicit ME: MonadError[M, AbtError],
-                              MV: MonadVar[M[AbtError, ?], V],
+                    (implicit ME: MonadError[M, AbtError[S, V]],
+                              MV: MonadVar[M[AbtError[S, V], ?], V],
                               S: Equal[S])
-                    : M[AbtError, T]
+                    : M[AbtError[S, V], T]
 
   def infer[M[_]](t: T)(implicit MV: MonadVar[M, V]): M[(Valence[S], View[V, O, T])]
 }

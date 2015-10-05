@@ -1,7 +1,5 @@
 package abt
 
-import scala.Predef.String
-
 // TODO: Finish cases
 sealed trait AbtError[S, V]
 

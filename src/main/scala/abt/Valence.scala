@@ -12,10 +12,16 @@ import scalaz.syntax.show._
   */
 final case class Valence[Sort](vars: List[Sort], sort: Sort)
 
-object Valence {
+object Valence extends ValenceInstances {
   implicit def valenceOrder[S: Order]: Order[Valence[S]] =
     Order.orderBy(v => (v.sort, v.vars))
 
   implicit def valenceShow[S: Show]: Show[Valence[S]] =
     Show.shows(v => v.vars.shows + v.sort.shows)
 }
+
+sealed abstract class ValenceInstances {
+  implicit def valenceEqual[S: Equal]: Equal[Valence[S]] =
+    Equal.equalBy(v => (v.sort, v.vars))
+}
+
