@@ -1,7 +1,6 @@
 package abt
 
-import scala.Predef.String
-
+import scala.Predef.{String, implicitly}
 import scalaz._
 
 trait MonadVar[F[_], A] extends Monad[F] {
@@ -20,7 +19,11 @@ object MonadVar {
 
   implicit def eitherTMonadVar[F[_], E, A](implicit F: MonadVar[F, A]): MonadVar[EitherT[F, E, ?], A] =
     new MonadVar[EitherT[F, E, ?], A] {
+      type M[X] = EitherT[F, E, X]
+      private val M: Monad[M] = implicitly
       def named(name: String) = EitherT.right(F.named(name))
       def clone(a: A) = EitherT.right(F.clone(a))
+      def point[B](b: => B) = M.point(b)
+      def bind[B, C](fa: EitherT[F, E, B])(f: B => EitherT[F, E, C]) = M.bind(fa)(f)
     }
 }

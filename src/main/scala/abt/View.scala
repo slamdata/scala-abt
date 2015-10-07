@@ -13,7 +13,7 @@ sealed trait View[V, O, A]
 
 object View {
   /** A node that’s a variable reference */
-  final case class Var[V, O, A](v: V)               extends View[V, O, A]
+  final case class Var[V, O, A](v: V)                 extends View[V, O, A]
   /** Abstraction is a node that binds variables */
   final case class Abs[V, O, A](vs: Vector[V], a: A)  extends View[V, O, A]
   /** A standard term in the underlying AST */
