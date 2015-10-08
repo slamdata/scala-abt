@@ -39,7 +39,7 @@ libraryDependencies ++= Seq(
 )
 
 // Wartremover
-wartremoverErrors ++= Warts.unsafe.filterNot(_.clazz == Wart.Throw.clazz)
+wartremoverErrors ++= Warts.allBut(Wart.Throw)
 
 // Kind Projector
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")

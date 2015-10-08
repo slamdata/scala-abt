@@ -83,21 +83,21 @@ object LN {
 
         def inferValence: T => Valence[S] = {
           case FreeVar(_, sigma) =>
-            Valence(Vector.empty, sigma)
+            Valence.noVars(sigma)
 
           case BoundVar(_, sigma) =>
-            Valence(Vector.empty, sigma)
+            Valence.noVars(sigma)
 
           case Abstraction(bindings, e) =>
             Valence(bindings map (_._2), inferValence(e).sort)
 
           case Application(theta, _) =>
-            Valence(Vector.empty, O.arity(theta).sort)
+            Valence.noVars(O.arity(theta).sort)
         }
 
         t match {
           case FreeVar(v, sigma) =>
-            ME.point((Valence(Vector.empty, sigma), Var(v)))
+            ME.point((Valence.noVars(sigma), Var(v)))
 
           case BoundVar(_, s) =>
             ME.raiseError(UnexpectedBoundVariable(s))
@@ -110,7 +110,7 @@ object LN {
                Abs(ys, liberateVariables(ys, e))))
 
           case Application(theta, es) =>
-            ME.point((Valence(Vector.empty, O.arity(theta).sort), App(theta, es)))
+            ME.point((Valence.noVars(O.arity(theta).sort), App(theta, es)))
         }
       }
 

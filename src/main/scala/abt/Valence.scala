@@ -13,6 +13,9 @@ import scalaz.syntax.show._
 final case class Valence[Sort](vars: Vector[Sort], sort: Sort)
 
 object Valence extends ValenceInstances {
+  def noVars[S](sort: S): Valence[S] =
+    Valence(Vector.empty[S], sort)
+
   implicit def valenceOrder[S: Order]: Order[Valence[S]] =
     Order.orderBy(v => (v.sort, v.vars))
 
