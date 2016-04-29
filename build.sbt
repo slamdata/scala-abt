@@ -2,7 +2,7 @@ name := "scala-abt"
 
 organization := "com.slamdata"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 // Resolvers
 resolvers ++= Seq(
@@ -33,13 +33,12 @@ scalacOptions ++= Seq(
 
 // Compile Dependencies
 libraryDependencies ++= Seq(
-  "org.scalaz" %% "scalaz-core" % "7.1.4",
-
-  "org.scalacheck" %% "scalacheck" % "1.12.5" % "test"
+  "org.scalaz"     %% "scalaz-core" % "7.2.2",
+  "org.scalacheck" %% "scalacheck"  % "1.12.5" % "test"
 )
 
 // Wartremover
 wartremoverErrors ++= Warts.allBut(Wart.Throw)
 
 // Kind Projector
-addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.6.3")
+addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.7.1")

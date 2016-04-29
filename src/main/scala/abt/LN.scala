@@ -2,7 +2,6 @@ package abt
 
 import scala.collection.immutable.Vector
 import scala.Unit
-import scala.Predef.implicitly
 
 import scalaz._
 import scalaz.std.vector._
@@ -15,12 +14,14 @@ import scalaz.syntax.foldable._
 sealed trait LN[S, V, O]
 
 object LN {
-  final case class FreeVar[S, V, O](v: V, s: S) extends LN[S, V, O]
-  final case class BoundVar[S, V, O](c: Coord, s: S) extends LN[S, V, O]
+  final case class FreeVar[S, V, O](v: V, s: S)
+    extends LN[S, V, O]
+  final case class BoundVar[S, V, O](c: Coord, s: S)
+    extends LN[S, V, O]
   final case class Abstraction[S, V, O](vs: Vector[(V, S)], t: LN[S, V, O])
-      extends LN[S, V, O]
+    extends LN[S, V, O]
   final case class Application[S, V, O](o: O, args: Vector[LN[S, V, O]])
-      extends LN[S, V, O]
+    extends LN[S, V, O]
 
   /** NB: Not inherently stack safe, depends on the underlying Monad to
     * provide stack safety.
@@ -33,16 +34,18 @@ object LN {
       type T = LN[S, V, O]
       type E = AbtError[S, V]
 
-      def check[M[_, _]](view: View[V, O, T], valence: Valence[S])
-                        (implicit ME: MonadError[M, E],
-                                  MV: MonadVar[M[E, ?], V],
-                                  O:  Operator[S, O],
-                                  SE: Equal[S],
-                                  SV: Equal[V])
-                        : M[E, T] = {
-
-        def chkInf(e: T, vlnc: Valence[S]): M[E, T] =
-          ME.bind(infer[M](e)) { case (vlnc1, _) =>
+      def check[F[_]](
+        view: View[V, O, T],
+        valence: Valence[S]
+      )(implicit
+        ME: MonadError[F, E],
+        MV: MonadVar[F, V],
+        O:  Operator[S, O],
+        SE: Equal[S],
+        SV: Equal[V]
+      ): F[T] = {
+        def chkInf(e: T, vlnc: Valence[S]): F[T] =
+          ME.bind(infer[F](e)) { case (vlnc1, _) =>
             ME.map(expectValenceEq(vlnc, vlnc1))(_ => e)
           }
 
@@ -53,7 +56,7 @@ object LN {
             ME.map(expectNoBindings(valence))(_ => FreeVar(x, sigma))
 
           case Abs(xs, e) =>
-            ME.bind(infer[M](e)) { case (Valence(_, tau), _) =>
+            ME.bind(infer[F](e)) { case (Valence(_, tau), _) =>
               ME.bind(expectSortsEq(sigma, tau)) { _ =>
                 if (xs.length === sorts.length)
                   ME.point(Abstraction(xs zip sorts, imprisonVariables(xs, e)))
@@ -75,12 +78,13 @@ object LN {
         }
       }
 
-      def infer[M[_, _]](t: T)
-                        (implicit ME: MonadError[M, E],
-                                  MV: MonadVar[M[E, ?], V],
-                                  O:  Operator[S, O])
-                        : M[E, (Valence[S], View[V, O, T])] = {
-
+      def infer[F[_]](
+        t: T
+      )(implicit
+        ME: MonadError[F, E],
+        MV: MonadVar[F, V],
+        O:  Operator[S, O]
+      ): F[(Valence[S], View[V, O, T])] = {
         def inferValence: T => Valence[S] = {
           case FreeVar(_, sigma) =>
             Valence.noVars(sigma)
@@ -116,23 +120,33 @@ object LN {
 
       ////
 
-      private def expectNoBindings[M[_, _]](v: Valence[S])
-                                           (implicit ME: MonadError[M, E])
-                                           : M[E, Unit] = {
+      private def expectNoBindings[F[_]](
+        v: Valence[S]
+      )(implicit
+        ME: MonadError[F, E]
+      ): F[Unit] = {
         if (v.vars.isEmpty) ME.point(())
         else ME.raiseError(expectedNoBindings(v))
       }
 
-      private def expectSortsEq[M[_, _]](s1: S, s2: S)
-                                        (implicit ME: MonadError[M, E], S: Equal[S])
-                                        : M[E, Unit] = {
+      private def expectSortsEq[F[_]](
+        s1: S,
+        s2: S
+      )(implicit
+        ME: MonadError[F, E],
+        S: Equal[S]
+      ): F[Unit] = {
         if (s1 === s2) ME.point(())
         else ME.raiseError(sortMismatch(s1, s2))
       }
 
-      private def expectValenceEq[M[_, _]](v1: Valence[S], v2: Valence[S])
-                                          (implicit ME: MonadError[M, E], S: Equal[S])
-                                          : M[E, Unit] = {
+      private def expectValenceEq[F[_]](
+        v1: Valence[S],
+        v2: Valence[S]
+      )(implicit
+        ME: MonadError[F, E],
+        S: Equal[S]
+      ): F[Unit] = {
         if (v1 === v2) ME.point(())
         else ME.raiseError(valenceMismatch(v1, v2))
       }
