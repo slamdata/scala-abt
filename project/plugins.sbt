@@ -1,3 +1,3 @@
-// Wartremover
-// https://github.com/typelevel/wartremover
-addSbtPlugin("org.brianmckenna" % "sbt-wartremover" % "0.14")
+resolvers += Resolver.sonatypeRepo("releases")
+
+addSbtPlugin("com.slamdata" % "sbt-slamdata" % "0.0.10")
