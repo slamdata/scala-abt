@@ -1,44 +1,45 @@
-name := "scala-abt"
+import sbt._, Keys._
 
-organization := "com.slamdata"
+import slamdata.CommonDependencies
+import slamdata.SbtSlamData.transferPublishAndTagResources
 
-scalaVersion := "2.11.8"
-
-// Resolvers
-resolvers ++= Seq(
-  Resolver.sonatypeRepo("releases"),
-  "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
+lazy val baseSettings = commonBuildSettings ++ Seq(
+  organization := "com.slamdata",
+  libraryDependencies += CommonDependencies.slamdata.predef,
+  wartremoverWarnings in (Compile, compile) --= Seq(
+    Wart.ImplicitParameter
+  )
 )
 
-// Compile options
-// http://tpolecat.github.io/2014/04/11/scalac-flags.html
-scalacOptions ++= Seq(
-  "-deprecation",
-  "-encoding", "UTF-8",
-  "-feature",
-  "-language:existentials",
-  "-language:higherKinds",
-  "-language:implicitConversions",
-  "-unchecked",
-  "-Xfatal-warnings",
-  "-Xlint",
-  "-Yno-adapted-args",
-  "-Ywarn-dead-code",
-  "-Ywarn-numeric-widen",
-  "-Ywarn-value-discard",
-  "-Ywarn-unused-import",
-  "-Xfuture",
-  "-Yno-imports"
-)
+lazy val publishSettings = commonPublishSettings ++ Seq(
+  organizationName := "SlamData Inc.",
+  organizationHomepage := Some(url("http://slamdata.com")),
+  homepage := Some(url("https://github.com/slamdata/scala-abt")),
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/slamdata/scala-abt"),
+      "scm:git@github.com:slamdata/scala-abt.git"
+    )
+  ))
 
-// Compile Dependencies
-libraryDependencies ++= Seq(
-  "org.scalaz"     %% "scalaz-core" % "7.2.2",
-  "org.scalacheck" %% "scalacheck"  % "1.12.5" % "test"
-)
+lazy val allSettings =
+  baseSettings ++ publishSettings
 
-// Wartremover
-wartremoverErrors ++= Warts.allBut(Wart.Throw)
+lazy val root = (project in file("."))
+  .aggregate(core)
+  .settings(allSettings)
+  .settings(noPublishSettings)
+  .settings(transferPublishAndTagResources)
+  .settings(Seq(
+    name := "abt"
+  ))
 
-// Kind Projector
-addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.7.1")
+lazy val core = (project in file("core"))
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(allSettings)
+  .settings(Seq(
+    name := "abt-core",
+    libraryDependencies ++= Seq(
+      CommonDependencies.scalaz.core
+    )
+  ))
