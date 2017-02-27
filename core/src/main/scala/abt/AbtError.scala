@@ -16,7 +16,7 @@
 
 package abt
 
-import slamdata.Predef.String
+import slamdata.Predef._
 
 // TODO: Finish cases
 sealed trait AbtError[S, V]

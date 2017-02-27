@@ -17,7 +17,9 @@
 package abt
 
 import slamdata.Predef._
+
 import scala.Predef.implicitly
+
 import scalaz._
 
 trait MonadVar[F[_], A] extends Monad[F] {

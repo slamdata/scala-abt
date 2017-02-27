@@ -16,7 +16,8 @@
 
 package abt
 
-import slamdata.Predef.AnyVal
+import slamdata.Predef._
+
 import scalaz._
 
 final case class ShiftFn[A, B](f: (Coord, A) => B) extends AnyVal

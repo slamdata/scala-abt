@@ -16,7 +16,7 @@
 
 package abt
 
-import slamdata.Predef.Int
+import slamdata.Predef._
 
 import scalaz._
 import scalaz.std.tuple._

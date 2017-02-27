@@ -16,7 +16,7 @@
 
 package abt
 
-import slamdata.Predef.Vector
+import slamdata.Predef._
 
 import scalaz._
 
